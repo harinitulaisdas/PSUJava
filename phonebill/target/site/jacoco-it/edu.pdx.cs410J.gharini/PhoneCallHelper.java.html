@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhoneCallHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">PhoneCallHelper.java</span></div><h1>PhoneCallHelper.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+import edu.pdx.cs410J.AbstractPhoneCall;
+import java.text.SimpleDateFormat;
+import java.text.ParseException;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Locale;
+
+<span class="nc" id="L11">public class PhoneCallHelper {</span>
+    /**
+     * @param msg This method prints the error message on the console when an exception is raised . The program terminates with the status code -1 when this
+     *            method is executed.
+     */
+     static void printErrorMessageAndExit(String msg) {
+<span class="nc" id="L17">        System.err.println (msg);</span>
+<span class="nc" id="L18">        System.exit (-1);</span>
+
+<span class="nc" id="L20">    }</span>
+
+    /**
+     * @param call : An instance of a phone call .
+     *             &lt;p&gt;
+     *             This method prints the details of a phone call. This corresponds to the -print option in the command line arguments.
+     */
+    static void printCall(AbstractPhoneCall call) {
+<span class="nc" id="L28">        System.out.println (call);</span>
+<span class="nc" id="L29">    }</span>
+
+
+    /**
+     * This method has the readme information and prints it on the console ouput when the command line has -README option.
+     */
+    static void readme() {
+<span class="nc" id="L36">        String readme = &quot;Course    : Advanced Java Programming.\nName      : Harini Gowdagere Tulaisdas.\nemail     : gharini@pdx.edu\n&quot;;</span>
+<span class="nc" id="L37">        readme += &quot;Project   : Project4\nObjective :\n&quot;;</span>
+<span class="nc" id="L38">        readme += &quot;\t\tThe Project 4 involves developing a a REST - ful Phone Bill Web Service. The Project 4 is built on Project 1,2 and 3. The web application allows adding the phone call , &quot; +</span>
+                &quot;  searching for all the phone calls between the specified times and displaying all the phone calls for a customer. The application can be accessed through web browser as well as the the command line. &quot; +
+                &quot;The command line has the format “[options]&lt;args&gt; “ the optional arguments in this project are -host , -port , -search and -print . The option -host is followed by the host name and the option -port is &quot; +
+                &quot;followed by the port number. These arguments are necessary to establish connection with the server. The -search option requires customer name and the start and end times. The other arguments of the phone&quot; +
+                &quot; call are similar to the previous projects. The other arguments are used to construct a phone call and add it to the Phonebill. Unlike Previous projects that server stores multiple phone bills and supports&quot; +
+                &quot; REST - ful web service. The phone bill information is stored in server and is available as long as the server is available. &quot; +
+                &quot;The -print option prints the latest phone call information added to the Phonebill.The -README prints the readme information on the standard output and exits the application. &quot; +
+                &quot;\n\nThe -README option in the arguments prints readme information but doesn’t validate any other arguments.\n \tAll the necessary validations for the  other arguments follow the &quot; +
+                &quot;same protocol as the previous assignments.&quot;;
+<span class="nc" id="L47">        System.out.println (readme);</span>
+<span class="nc" id="L48">    }</span>
+
+    /**
+     * @param arg : The phone number (caller / callee ) f
+     * @return phoneNumber : A valid phone number.
+     * &lt;p&gt;
+     * This method parses the phone number and checks for the valid format.
+     */
+
+    static String getPhoneNumbers(String arg) {
+<span class="nc" id="L58">        String phoneNumber = null;</span>
+<span class="nc" id="L59">        checkValidArgumentFormat (arg);</span>
+<span class="nc" id="L60">        checkPhoneNumberFormat (arg);</span>
+<span class="nc" id="L61">        phoneNumber = arg;</span>
+<span class="nc" id="L62">        return phoneNumber;</span>
+    }
+
+
+    /**
+     * @param : numOfNonOptions : count of number of non option arguments in the command line.
+     * @throws : InvalidNumberOfArgumentsException : The number of arguments passed in is incorrect.
+     *           &lt;p&gt;
+     *           This method generates the appropriate exceptions if there are no command line arguments  , few arguments are missing or there are extra
+     *           arguments. There can no options/1 option or all options provided. The non option arguments can be 0 or 5.
+     * @param: numOfArgs : count of number of arguments passed in the command line
+     * @param: numOfOptions : count of number of options in the command line arguments
+     */
+
+    static void checkNumOfArgs(int numOfNonOptions,  String [] args , Boolean ispretty) {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (args.length == 0) {</span>
+<span class="nc" id="L78">            throw new InvalidNumberOfArgumentsException (&quot;Missing Command Line Arguments &quot; );</span>
+        }
+<span class="nc bnc" id="L80" title="All 4 branches missed.">        else if (numOfNonOptions &gt; 0 &amp;&amp; numOfNonOptions &lt; 9) {</span>
+<span class="nc" id="L81">            throw new InvalidNumberOfArgumentsException (&quot;Missing few Command Line Arguments &quot;);</span>
+        }
+<span class="nc bnc" id="L83" title="All 6 branches missed.">        else if (!Arrays.asList (args).contains (&quot;-textFile&quot;) &amp;&amp; !ispretty &amp;&amp; numOfNonOptions &gt; 10) {</span>
+
+<span class="nc" id="L85">            throw new InvalidNumberOfArgumentsException (&quot;Command Line has too many arguments &quot;);</span>
+        }
+
+<span class="nc" id="L88">    }</span>
+
+    /***
+     *
+     * @param args  : the command line arguments
+     * @param numOfNonOptions : the number of non optional arguments
+     * @param numOfOptions : the number of optional arguments
+     *                     This method checks if the number of arguments passed in the command line is valid or not
+     */
+
+    static void checkNumberOfArguments(String [] args , int numOfNonOptions,int numOfOptions , ArrayList options){
+<span class="nc bnc" id="L99" title="All 2 branches missed.">        if (args.length == 0) {</span>
+<span class="nc" id="L100">            throw new InvalidNumberOfArgumentsException (&quot;Missing Command Line Arguments &quot; );</span>
+        }
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (args.length&gt; 15){</span>
+<span class="nc" id="L103">            throw new InvalidNumberOfArgumentsException (&quot;Command Line has too many arguments&quot;);</span>
+        }
+<span class="nc bnc" id="L105" title="All 4 branches missed.">        if(Arrays.asList (args).contains (&quot;-search&quot;) &amp;&amp; args.length &gt; 12 ){</span>
+<span class="nc" id="L106">            throw new InvalidNumberOfArgumentsException (&quot;The search option requires customer name , &quot; +</span>
+                    &quot;start time and end time only. Extraneous arguments in the command line &quot;);
+        }
+<span class="nc bnc" id="L109" title="All 6 branches missed.">        if(!Arrays.asList (&quot;-host&quot; , &quot;-port&quot; , &quot;-search&quot;).containsAll (options) &amp;&amp; numOfNonOptions &gt; 0 &amp;&amp; numOfNonOptions &lt; 11){</span>
+
+<span class="nc" id="L111">            throw new InvalidNumberOfArgumentsException (&quot;Missing few Command Line Arguments&quot;);</span>
+        }
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if(numOfOptions &gt; 4){</span>
+<span class="nc" id="L114">            throw new InvalidNumberOfArgumentsException (&quot;Invalid number of options&quot;);</span>
+        }
+
+<span class="nc" id="L117">    }</span>
+
+    /**
+     * @param args command line arguments
+     * @return list : List of lists ,the list of options and non option arguments.
+     * @throws : InvalidOptionException : The options are invalid/incorrect format.
+     *           &lt;p&gt;
+     *           This method checks if the options entered in the command line adhere to the specified format. The options strict match -README -print
+     *           and are case sensitive. The method throws exceptions if the options are not in the correct format. The method also separates the
+     *           options and non option arguments.
+     */
+    static ArrayList&lt;ArrayList&lt;String&gt;&gt; loadOptions(String[] args) {
+<span class="nc" id="L129">        ArrayList&lt;String&gt; options = new ArrayList&lt;&gt; ();</span>
+<span class="nc" id="L130">        ArrayList&lt;String&gt; nonOptions = new ArrayList&lt;&gt; ();</span>
+<span class="nc" id="L131">        ArrayList&lt;String&gt; files = new ArrayList&lt;&gt; ();</span>
+<span class="nc" id="L132">        ArrayList&lt;String&gt; hostPort = new ArrayList&lt;&gt; ();</span>
+<span class="nc" id="L133">        String textFile = null;</span>
+<span class="nc" id="L134">        String prettyFile = null;</span>
+<span class="nc" id="L135">        ArrayList&lt;ArrayList&lt;String&gt;&gt; list = new ArrayList&lt;&gt; ();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (int i = 0; i &lt; args.length; i++) {</span>
+<span class="nc" id="L137">            String arg = args[i].toLowerCase ();</span>
+<span class="nc bnc" id="L138" title="All 12 branches missed.">            if ((arg.contains (&quot;readme&quot;) || arg.contains (&quot;print&quot;) || arg.contains (&quot;-host&quot;) || arg.contains (&quot;port&quot;) || arg.contains (&quot;search&quot;)) &amp;&amp; !arg.startsWith (&quot;-&quot;)) {</span>
+<span class="nc" id="L139">                throw new InvalidOptionException (&quot;Invalid Option , Usage : -README -print -search  -host -port:&quot; + arg);</span>
+            }
+<span class="nc bnc" id="L141" title="All 4 branches missed.">            else if (arg.equals (&quot;-readme&quot;) || arg.equals (&quot;-print&quot;)||</span>
+<span class="nc bnc" id="L142" title="All 6 branches missed.">                    arg.equals (&quot;-host&quot;) || arg.equals (&quot;-port&quot;) || arg.equals (&quot;-search&quot;))</span>
+            {
+<span class="nc bnc" id="L144" title="All 4 branches missed.">                if (args[i].matches (&quot;-README&quot;) || args[i].matches (&quot;-print&quot;) ||</span>
+<span class="nc bnc" id="L145" title="All 6 branches missed.">                         args[i].matches (&quot;-host&quot;) || args[i].matches (&quot;-port&quot;) ||args[i].matches (&quot;-search&quot;)) {</span>
+<span class="nc" id="L146">                    options.add (args[i]);</span>
+                }
+                else {
+<span class="nc" id="L149">                    throw new InvalidOptionException (&quot;Options are case sensitive , Usage : -README , -print , -search ,-host , -port&quot; + args[i]);</span>
+                }
+            }
+//            else if(args[i].endsWith(&quot;.txt&quot;) || args[i].equals (&quot;-&quot;)){
+//                files.add (args[i]);
+//            }
+//
+            else {
+<span class="nc" id="L157">                nonOptions.add (args[i]);</span>
+            }
+        }
+//        for (String opt : options) {
+//           if (opt.equals (&quot;-textFile&quot;)) {
+//               checkFileOption (args ,&quot;-textFile&quot;);
+//            }
+//        }
+<span class="nc" id="L165">        list.add (options);</span>
+<span class="nc" id="L166">        list.add (nonOptions);</span>
+       // list.add (files);
+<span class="nc" id="L168">        return list;</span>
+    }
+
+    /**
+     * @param  : The non option arguments from the command line.
+     *                   This method checks that the the -textFile is followed by the filename/filepath
+     */
+    static void checkFileOption(String [] args , String option) {
+<span class="nc" id="L176">       int indexOftxtOption= Arrays.asList (args).indexOf (option);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">        if (!args[indexOftxtOption + 1].endsWith (&quot;.txt&quot;)) {</span>
+<span class="nc" id="L178">            throw new InvalidOptionException (&quot;The option -textFile should be followed by the file name/path ,Usage : -textFile filename.txt : &quot; + args[indexOftxtOption + 1]);</span>
+       }
+<span class="nc" id="L180">    }</span>
+
+    /***
+     *
+     * @param args : The array of command line arguments
+     *             This method checks for all the validations with host and port.
+     */
+
+    static void checkHostAndPort(String[] args){
+<span class="nc" id="L189">       int indexOfHost = Arrays.asList (args).indexOf (&quot;-host&quot;);</span>
+<span class="nc" id="L190">       int indexOfPort = Arrays.asList (args).indexOf (&quot;-port&quot;);</span>
+<span class="nc bnc" id="L191" title="All 8 branches missed.">       if((Arrays.asList (args).contains (&quot;-host&quot;) &amp;&amp; !Arrays.asList (args).contains (&quot;-port&quot;)) || (Arrays.asList (args).contains (&quot;-port&quot;) &amp;&amp; !Arrays.asList (args).contains (&quot;-host&quot;))){</span>
+<span class="nc" id="L192">           throw new InvalidOptionException (&quot;Please provide host and port to connect to the server&quot;);</span>
+       }
+//       if((indexOfHost &gt; indexOfPort &amp;&amp; indexOfHost != indexOfPort+2) || (indexOfPort &gt; indexOfHost &amp;&amp; indexOfPort != indexOfHost+2)){
+//           throw new InvalidOptionException (&quot;The host and port should be provided after each other &quot;);
+//       }
+
+<span class="nc bnc" id="L198" title="All 4 branches missed.">        if(args[indexOfHost +1].isEmpty ()|| args[indexOfHost +1].startsWith (&quot;-&quot;)){</span>
+<span class="nc" id="L199">           throw new InvalidOptionException (&quot;The option -host should be followed by the hostname : &quot; + args[indexOfHost+1]);</span>
+        }
+
+<span class="nc bnc" id="L202" title="All 4 branches missed.">        if(args[indexOfPort +1].isEmpty ()||args[indexOfPort + 1].startsWith (&quot;-&quot;)){</span>
+<span class="nc" id="L203">           throw new InvalidOptionException (&quot;The option -port should be followed by the port number : &quot; + args[indexOfPort+1]);</span>
+        }
+
+        try{
+<span class="nc" id="L207">            int port = Integer.parseInt (args[indexOfPort+1]);</span>
+<span class="nc" id="L208">        } catch (NumberFormatException ne){</span>
+<span class="nc" id="L209">           throw new IllegalArgumentException (&quot;The port number has to be numeric :&quot; + args[indexOfPort+1]);</span>
+<span class="nc" id="L210">        }</span>
+
+<span class="nc bnc" id="L212" title="All 6 branches missed.">        if(Arrays.asList (args).contains (&quot;-search&quot;) &amp;&amp; (indexOfHost == -1 || indexOfPort == -1)){</span>
+<span class="nc" id="L213">           throw new InvalidOptionException (&quot;Unable to connect to server as Host and Port are not provided &quot;);</span>
+        }
+
+<span class="nc bnc" id="L216" title="All 4 branches missed.">        if(Arrays.asList (args).contains (&quot;-search&quot;) &amp;&amp; Arrays.asList (args).contains (&quot;-print&quot;)){</span>
+<span class="nc" id="L217">           throw new InvalidOptionException (&quot;Search and Print cannot performed at the same time. Please provide one of them at a time&quot;);</span>
+        }
+
+<span class="nc" id="L220">    }</span>
+
+    /**
+     *
+     * @param args : the command line arguments.
+     * This method checks if the pretty content is to be written on to the file or standard output.
+     */
+
+     static Boolean checkifPrettyPrintToFile(String[] args ) {
+<span class="nc" id="L229">         Boolean isPrettyFile = false;</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">         if(Arrays.asList (args).contains (&quot;-pretty&quot;)){</span>
+<span class="nc" id="L231">             int indexOfPretty = Arrays.asList (args).indexOf (&quot;-pretty&quot;);</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">             if (args[indexOfPretty + 1].endsWith (&quot;.txt&quot;)) {</span>
+<span class="nc" id="L233">                 isPrettyFile = true;</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">             } else if(!args[indexOfPretty + 1].equals (&quot;-&quot;)){</span>
+<span class="nc" id="L235">                 throw new InvalidOptionException (&quot;The pretty option must be followed with a filename or - :&quot; + args[indexOfPretty + 1]);</span>
+             }
+
+         }
+
+<span class="nc" id="L240">         return isPrettyFile;</span>
+     }
+
+    /**
+     *
+     * @param
+     * @param prettyPrintToFile : Boolean value that determines if the prety is to be written on to the file or standard output.
+     * @param options : the optional arguments.
+     * @return : the index of the argument where the phone call attributes begin.
+     */
+     static int getStartPoint( Boolean prettyPrintToFile , ArrayList options,ArrayList nonOptions ,ArrayList files){
+<span class="nc" id="L251">         int startPt = 0;</span>
+<span class="nc bnc" id="L252" title="All 4 branches missed.">         if(options.contains (&quot;-textFile&quot;) &amp;&amp; options.contains (&quot;-pretty&quot;)){</span>
+<span class="nc" id="L253">             startPt = options.size () + 2;</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">         } else if(options.contains (&quot;-pretty&quot;)){</span>
+<span class="nc" id="L255">             startPt = options.size () + 1;</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">         }else if(options.contains (&quot;-textFile&quot;)){</span>
+<span class="nc" id="L257">             startPt = options.size () + 1;</span>
+         }
+         else{
+<span class="nc" id="L260">             startPt = options.size ();</span>
+         }
+<span class="nc" id="L262">         return startPt;</span>
+     }
+
+
+    /**
+     * @param arg : The command line argument.
+     * @throws InvalidArgumentFormatException : Argument format is wrong exception
+     *                                        &lt;p&gt;
+     *                                        This method checks if the command line argument is in the correct format.
+     *                                        The arguments other than options cannot start with a hyphen (-). An exception is thrown
+     *                                        when the argument doesnt have the correct format with an appropriate message.
+     */
+    static void checkValidArgumentFormat(String arg) {
+<span class="nc bnc" id="L275" title="All 4 branches missed.">        if (arg.length () &gt; 1 &amp;&amp; arg.startsWith (&quot;-&quot;)) {</span>
+<span class="nc" id="L276">            throw new InvalidArgumentFormatException (&quot;Invalid Argument : Argument cannot start with a -  :&quot; + arg);</span>
+        }
+<span class="nc" id="L278">    }</span>
+
+    /**
+     * @param arg : The Phone number
+     * @throws InvalidPhoneNumberException : The phone number is not in the correct format.
+     *                                     &lt;p&gt;
+     *                                     This method checks if the phone numbers have the format nnn-nnn-nnnn. In case the phone numbers are in wrong format an exception
+     *                                     with appropriate message is thrown.
+     */
+    static void checkPhoneNumberFormat(String arg) {
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (!arg.matches (&quot;^\\(?([0-9]{3})\\)?[-\\s]?([0-9]{3})[-\\s]?([0-9]{4})&quot;)) {</span>
+<span class="nc" id="L289">            throw new InvalidPhoneNumberException (&quot;Invalid Phone Number Format , Usage : nnn-nnn-nnnn  : &quot; + arg);</span>
+        }
+
+<span class="nc" id="L292">    }</span>
+    /**
+     * @param caller : The phone number of the caller.
+     * @param callee : The phone number of the callee.
+     * @throws SameCallerAndCalleeException : The caller and callee has same phone numbers.
+     *                                      &lt;p&gt;
+     *                                      This method checks if the caller and callee has same phone number. In case they have same phone number
+     *                                      a SameCallerAndCalleeException is thrown that gives a message that the phone numbers are same.
+     */
+     static void checkCallerAndCallee(String caller, String callee) {
+<span class="nc bnc" id="L302" title="All 2 branches missed.">        if (caller.equals (callee)) {</span>
+<span class="nc" id="L303">            throw new SameCallerAndCalleeException (&quot;Caller and Callee should be different  :&quot; + caller + &quot; &quot; + callee);</span>
+        }
+
+<span class="nc" id="L306">    }</span>
+    /**
+     *
+     * @param ampm : the am/pm argument from the command line
+     */
+    static void checkAmPmForCase(String ampm){
+<span class="nc bnc" id="L312" title="All 2 branches missed.">         if(!ampm.matches ((&quot;am|pm&quot;))){</span>
+<span class="nc" id="L313">             throw new InvalidDateAndTimeException (&quot;The am/pm is case sensitive : &quot; + ampm);</span>
+         }
+<span class="nc" id="L315">    }</span>
+
+    /**
+     * @param arg : the date variable as string
+     * @throws InvalidDateAndTimeException This method checks if the Start Date and end Date of the phone call is in the valid format. The valid format for time date/time
+     *                                     is &quot;yyyy/MM/dd &quot; . If the dates are in any format other than the specified one , an exception is thrown with the appropriate message.
+     */
+     static void checkDateFormat(String arg) {
+<span class="nc" id="L323">         SimpleDateFormat sdf = new SimpleDateFormat (&quot;MM/dd/yyyy&quot;, Locale.US);</span>
+<span class="nc" id="L324">        sdf.setLenient (false);</span>
+<span class="nc bnc" id="L325" title="All 2 branches missed.">        if (!arg.matches (&quot;\\d{2}/\\d{2}/\\d{4}&quot;))</span>
+<span class="nc" id="L326">            throw new InvalidDateAndTimeException (&quot;Invalid Date Format , Usage : MM/dd/yyyy  &quot; + arg);</span>
+        try {
+<span class="nc" id="L328">            Date date = sdf.parse (arg);</span>
+<span class="nc" id="L329">        } catch (ParseException pe) {</span>
+<span class="nc" id="L330">            throw new InvalidDateAndTimeException (&quot;Invalid Date , Usage : MM/dd/yyyy  &quot; + arg);</span>
+
+<span class="nc" id="L332">        } catch (DateTimeParseException dpe) {</span>
+<span class="nc" id="L333">            throw new InvalidDateAndTimeException (&quot;Invalid Date , Usage : MM/dd/yyyy  &quot; + arg);</span>
+
+<span class="nc" id="L335">        } catch (Exception e) {</span>
+<span class="nc" id="L336">            throw new InvalidDateAndTimeException (&quot;Invalid Date , Usage : MM/dd/yyyy  &quot; + arg);</span>
+<span class="nc" id="L337">        }</span>
+<span class="nc" id="L338">    }</span>
+
+    /**
+     * @param time : the time variable as string
+     * @param am_pm: the am/pm variable as string
+     * @throws InvalidDateAndTimeException This method checks if the Start time and end time is in the valid format. The valid format for time
+     *                                     is &quot; HH:mm&quot; . If the times are in any format other than the specified one , an exception is thrown with the appropriate message.
+     */
+
+     static void checkTimeFormat(String time , String am_pm) {
+<span class="nc" id="L348">        SimpleDateFormat sdf = new SimpleDateFormat (&quot;hh:mm a&quot;, Locale.US);</span>
+<span class="nc" id="L349">        String callTime = time + ' ' + am_pm;</span>
+        // ()
+<span class="nc" id="L351">        String pattrn = &quot;(1[012]|[1-9]):[0-5][0-9](\\s)?(?i)(am|pm)&quot;;</span>
+                //&quot;\\b(?:[01]?\\d|2[0-2]):[0-5][0-9](\\s)?(?i)(am|pm)&quot;;
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        if (!callTime.matches (pattrn))</span>
+<span class="nc" id="L354">            throw new InvalidDateAndTimeException (&quot;Invalid time format , Time must be in 12 hr format:&quot; + callTime);</span>
+        try {
+<span class="nc" id="L356">            Date date = sdf.parse (callTime);</span>
+<span class="nc" id="L357">        } catch (DateTimeParseException  | ParseException  dpe) {</span>
+<span class="nc" id="L358">            throw new InvalidDateAndTimeException (&quot;Invalid time , Usage : HH:mm &quot; + callTime);</span>
+<span class="nc" id="L359">        } catch (Exception e) {</span>
+<span class="nc" id="L360">            throw new InvalidDateAndTimeException (&quot;Invalid time , Usage : HH:mm &quot; + callTime);</span>
+<span class="nc" id="L361">        }</span>
+
+<span class="nc" id="L363">    }</span>
+
+    /**
+     *
+     * @param startDate : The Start time of the phone call.
+     * @param endDate   : The end time of the phone call.
+     * @throws InvalidDateAndTimeException
+     *
+     * This method is used the check the difference between the start and end date. It ensures that the end date of phone call is after
+     * the start date and the end date of the phone call is before current date and time. In case of failure to conform to the rule and exception
+     * stating appropriate reason is thrown.
+     */
+      static void checkDateDifference(String startDate ,String startTime, String endDate, String endTime ){
+<span class="nc" id="L376">         String strDate = startDate + &quot; &quot; + startTime;</span>
+<span class="nc" id="L377">         String eDate = endDate + &quot; &quot; + endTime;</span>
+<span class="nc" id="L378">         SimpleDateFormat sdf = new SimpleDateFormat (&quot;mm/dd/yyyy hh:mm a&quot; ,Locale.US);</span>
+<span class="nc" id="L379">         sdf.setLenient (false);</span>
+         try {
+<span class="nc" id="L381">                 Date d1 = sdf.parse (strDate);</span>
+<span class="nc" id="L382">                 Date d2 = sdf.parse (eDate);</span>
+<span class="nc" id="L383">                 Date cur_date = new Date ();</span>
+                 //System.out.println (cur_date);
+<span class="nc" id="L385">                 long diff = d2.getTime () - d1.getTime ();</span>
+<span class="nc" id="L386">                 long diff1 = cur_date.getTime () - d2.getTime ();</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">              if (diff &lt; 0) {</span>
+<span class="nc" id="L388">                  throw new InvalidDateAndTimeException (&quot;Invalid Dates , Start Date : &quot;+strDate +&quot; should be before end date : &quot; + eDate);</span>
+              }
+<span class="nc bnc" id="L390" title="All 2 branches missed.">              else if (diff1 &lt; 0) {</span>
+<span class="nc" id="L391">                  throw  new InvalidDateAndTimeException (&quot;Invalid end date , end date &quot; + eDate +&quot; should be before today!!  &quot; );</span>
+              }
+             }
+<span class="nc" id="L394">              catch (ParseException e) {</span>
+<span class="nc" id="L395">             throw new InvalidDateAndTimeException (&quot;Invalid date &quot;);</span>
+<span class="nc" id="L396">          }</span>
+
+<span class="nc" id="L398">    }</span>
+
+    /**
+     *
+     * @param date : The date of the phone call
+     * @param time : The time of Phone call
+     * @param ampm  : am/pm of the phone call
+     * @return  : the time formatted using simple date format
+     *
+     */
+    static Date convertToDate(String date , String time , String ampm){
+<span class="nc" id="L409">          Date sDate = null;</span>
+        try{
+<span class="nc" id="L411">            SimpleDateFormat sdf = new SimpleDateFormat (&quot;MM/dd/yyyy hh:mm aa&quot;);</span>
+<span class="nc" id="L412">            sdf.setLenient(false);</span>
+<span class="nc" id="L413">            sDate = sdf.parse (date+' '+time+' '+ampm);</span>
+<span class="nc" id="L414">        }catch (ParseException pe){</span>
+<span class="nc" id="L415">            throw  new InvalidDateAndTimeException (&quot;Invalid date , Usage : mm/dd/yyyy hh:mm a \n&quot; + date+' '+time+' '+ampm);</span>
+<span class="nc" id="L416">        }</span>
+<span class="nc" id="L417">      return sDate;</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

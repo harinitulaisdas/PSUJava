@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FileHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">FileHelper.java</span></div><h1>FileHelper.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+
+import java.io.*;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.*;
+
+<span class="nc" id="L10">public class FileHelper {</span>
+
+    /**
+     * @param phonebill : The path to the file
+     *                  This method checks if a text file exists in the location. If the file doesn't exist
+     *                  a new text file is created.
+     */
+    public static void checkIfFileExistsAndCreateIfOtherwise(File phonebill) {
+        try {
+<span class="nc bnc" id="L19" title="All 4 branches missed.">            if (phonebill.exists () &amp;&amp; phonebill.isDirectory ()) {</span>
+<span class="nc" id="L20">                throw new FileException (&quot;This is a directory :&quot; + phonebill);</span>
+            }
+<span class="nc bnc" id="L22" title="All 4 branches missed.">            else if (phonebill.exists () &amp;&amp; !phonebill.isFile ()) {</span>
+<span class="nc" id="L23">                throw new FileException (&quot;This is not a file :&quot; + phonebill);</span>
+            }
+<span class="nc bnc" id="L25" title="All 4 branches missed.">            else if (phonebill.exists () &amp;&amp; phonebill.length () == 0) {</span>
+<span class="nc" id="L26">                throw new FileException (&quot;This file is malformed : &quot; + phonebill);</span>
+            }
+<span class="nc bnc" id="L28" title="All 2 branches missed.">            else if (!phonebill.exists ()) {</span>
+<span class="nc" id="L29">                phonebill.createNewFile ();</span>
+            }
+<span class="nc" id="L31">        } catch (FileNotFoundException fe) {</span>
+<span class="nc" id="L32">            throw new FileException (fe.getMessage () + &quot; : &quot; + phonebill);</span>
+<span class="nc" id="L33">        } catch (UnsupportedEncodingException ue) {</span>
+<span class="nc" id="L34">            throw new FileException (ue.getMessage () + &quot; : &quot; + phonebill);</span>
+<span class="nc" id="L35">        } catch (IOException ie) {</span>
+<span class="nc" id="L36">            throw new FileException (&quot;File doesn't exist and cannot be created here : &quot; + phonebill);</span>
+<span class="nc" id="L37">        }</span>
+<span class="nc" id="L38">    }</span>
+
+    /**
+     * @param phonebill : the text file to read from
+     * @return The contents of the file as String
+     * This method reads the contents of the file to a string and returns it.
+     */
+
+
+    public static String readFile(File phonebill, String customer) {
+<span class="nc" id="L48">        StringBuilder contentBuilder = new StringBuilder ();</span>
+<span class="nc" id="L49">        try (BufferedReader br = new BufferedReader (new FileReader (phonebill))) {</span>
+            String sCurrentLine;
+<span class="nc bnc" id="L51" title="All 2 branches missed.">            while ((sCurrentLine = br.readLine ()) != null) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">                if (sCurrentLine != null) {</span>
+<span class="nc" id="L53">                    compareName (sCurrentLine, customer);</span>
+<span class="nc" id="L54">                    contentBuilder.append (sCurrentLine).append (&quot;\n&quot;);</span>
+                }
+            }
+<span class="nc" id="L57">        } catch (IOException e) {</span>
+<span class="nc" id="L58">            throw new FileException (&quot;The file is malformed : &quot; + phonebill);</span>
+<span class="nc" id="L59">        } catch (FileException fe) {</span>
+<span class="nc" id="L60">            throw new FileException (fe.getMessage ());</span>
+<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">        return contentBuilder.toString ();</span>
+    }
+    /**
+     * @param line     : The string that contains the line read from the file.
+     * @param customer : The customer name
+     *                 This method compares the customer name on the file with the customer name from the command line argument.
+     *                 If there is a mismatch an exception is raised with an appropriate message
+     */
+
+    public static void compareName(String line, String customer) {
+<span class="nc" id="L72">        String[] values = line.split (&quot;,&quot;);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (!values[0].equals (customer)) {</span>
+<span class="nc" id="L74">            throw new FileException (&quot;The customer name on the file is different from the one entered in command line : \nThe name entered by user : &quot; + customer + &quot;\nThe name on the file :  &quot; + values[0]);</span>
+        }
+<span class="nc" id="L76">    }</span>
+
+    /**
+     * @param content : The contents of the file as a string
+     * @return hashmap : The hashmap that contains customer name as key and his/her phone call details as values.
+     * &lt;p&gt;
+     * This method takes a string that has content of the file as input and converts it to a hashmap that contains
+     * the list of all phone calls from the file. Each phone call of the customer is converted to a list and all phone call lists
+     * of a customer are added to another list. This list is then added as value to a hashmap along with customer name as key.
+     */
+    public static HashMap splitContent(String content) {
+        String[] values;
+<span class="nc" id="L88">        String name = null;</span>
+<span class="nc" id="L89">        HashMap&lt;String, ArrayList&lt;ArrayList&lt;String&gt;&gt;&gt; hashmap = new HashMap&lt;String, ArrayList&lt;ArrayList&lt;String&gt;&gt;&gt; ();</span>
+<span class="nc" id="L90">        ArrayList&lt;ArrayList&lt;String&gt;&gt; callContent = new ArrayList&lt;ArrayList&lt;String&gt;&gt; ();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (((content.split (&quot;\n&quot;)).length) == 1) {</span>
+<span class="nc" id="L92">            ArrayList&lt;String&gt; temp = new ArrayList&lt;String&gt; ();</span>
+<span class="nc" id="L93">            values = content.split (&quot;,&quot;);</span>
+<span class="nc" id="L94">            name = values[0];</span>
+<span class="nc" id="L95">            helperToExtractCallContent (values, callContent, temp);</span>
+<span class="nc" id="L96">            hashmap.put (name, callContent);</span>
+<span class="nc" id="L97">        }</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        else if (((content.split (&quot;\n&quot;)).length) &gt; 1) {</span>
+<span class="nc" id="L99">            String[] eachCall = (content.split (&quot;\n&quot;));</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            for (String call : eachCall) {</span>
+<span class="nc" id="L101">                ArrayList&lt;String&gt; temp = new ArrayList&lt;String&gt; ();</span>
+<span class="nc" id="L102">                values = call.split (&quot;,&quot;);</span>
+<span class="nc" id="L103">                name = values[0];</span>
+<span class="nc" id="L104">                helperToExtractCallContent (values, callContent, temp);</span>
+            }
+<span class="nc" id="L106">            hashmap.put (name, callContent);</span>
+        }
+<span class="nc" id="L108">        return hashmap;</span>
+    }
+
+    /**
+     * @param values
+     * @param callContent
+     * @param temp        This is a utility method that helps in the parsing the contents of the file to a phone bill.
+     */
+
+    private static void helperToExtractCallContent(String[] values, ArrayList&lt;ArrayList&lt;String&gt;&gt; callContent, ArrayList&lt;String&gt; temp) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        for (int i = 1; i &lt; values.length; i++) {</span>
+<span class="nc" id="L119">            temp.add (values[i]);</span>
+        }
+<span class="nc" id="L121">        callContent.add (temp);</span>
+<span class="nc" id="L122">    }</span>
+    /**
+     *
+     * @param map  : hashMap that maps customer name to his/her phone bill.
+     * @param customer : customer name from the text file.
+     * @return : A PhoneBill .
+     *
+     * This method reads the values of the hashmap and parses it a phone call and adds it to the phone bill of the customer.
+     */
+
+    public static PhoneBill loadCallDetailsFromFileToPhoneBill (HashMap map , String customer){
+<span class="nc" id="L133">        Iterator&lt;ArrayList&lt;ArrayList&gt;&gt; iterator = null;</span>
+<span class="nc" id="L134">        Iterator&lt;ArrayList&gt; iterator1 = null;</span>
+<span class="nc" id="L135">        Iterator&lt;String&gt; iterator2 = null;</span>
+<span class="nc" id="L136">        PhoneBill bill = new PhoneBill (customer) ;</span>
+        PhoneCall callFromBill ;
+<span class="nc" id="L138">        iterator = map.values ().iterator ();</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        while (iterator.hasNext()) {</span>
+<span class="nc" id="L140">            ArrayList element = iterator.next();</span>
+<span class="nc" id="L141">            iterator1 = element.iterator ();</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">            while (iterator1.hasNext ()){</span>
+<span class="nc" id="L143">                ArrayList tt = iterator1.next ();</span>
+<span class="nc" id="L144">                iterator2 = tt.iterator ();</span>
+<span class="nc" id="L145">                String callerNumber = null;</span>
+<span class="nc" id="L146">                String calleeNumber = null;</span>
+<span class="nc" id="L147">                String startDate = null;</span>
+<span class="nc" id="L148">                String endDate = null;</span>
+<span class="nc" id="L149">                String startTime = null;</span>
+<span class="nc" id="L150">                String startAmPm=null;</span>
+<span class="nc" id="L151">                String endTime = null;</span>
+<span class="nc" id="L152">                String endAmPm=null;</span>
+<span class="nc" id="L153">                String[] dateTime = null ;</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                while (iterator2.hasNext ()){</span>
+<span class="nc" id="L155">                    String val = iterator2.next ();</span>
+                    try{
+<span class="nc bnc" id="L157" title="All 2 branches missed.">                        if(callerNumber == null){</span>
+<span class="nc" id="L158">                            callerNumber = PhoneCallHelper.getPhoneNumbers (val.trim ());</span>
+                        }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">                        else if(calleeNumber == null){</span>
+<span class="nc" id="L161">                            calleeNumber = PhoneCallHelper.getPhoneNumbers (val.trim ());</span>
+<span class="nc" id="L162">                            PhoneCallHelper.checkCallerAndCallee (callerNumber,calleeNumber);</span>
+                        }
+<span class="nc bnc" id="L164" title="All 6 branches missed.">                        else if(startDate == null &amp;&amp; startTime == null &amp;&amp; startAmPm == null){</span>
+<span class="nc" id="L165">                            dateTime = getDateTime (val);</span>
+<span class="nc" id="L166">                            startDate = dateTime[0];</span>
+<span class="nc" id="L167">                            startTime = dateTime[1];</span>
+<span class="nc" id="L168">                            startAmPm = dateTime[2];</span>
+                        }
+<span class="nc bnc" id="L170" title="All 6 branches missed.">                        else if(endDate == null &amp;&amp; endTime == null &amp;&amp; endAmPm == null){</span>
+<span class="nc" id="L171">                            dateTime = getDateTime (val);</span>
+<span class="nc" id="L172">                            endDate = dateTime[0];</span>
+<span class="nc" id="L173">                            endTime = dateTime[1];</span>
+<span class="nc" id="L174">                            endAmPm = dateTime[2];</span>
+                        }
+<span class="nc" id="L176">                    }catch(InvalidArgumentFormatException |InvalidPhoneNumberException| InvalidDateAndTimeException | SameCallerAndCalleeException ex){</span>
+<span class="nc" id="L177">                        PhoneCallHelper.printErrorMessageAndExit (&quot;The Content on the file is corrupted&quot; +&quot;\n&quot; + ex.getMessage () );</span>
+<span class="nc" id="L178">                    }</span>
+<span class="nc" id="L179">                }</span>
+<span class="nc" id="L180">                callFromBill = new PhoneCall (callerNumber,calleeNumber,PhoneCallHelper.convertToDate (startDate,startTime,startAmPm),PhoneCallHelper.convertToDate (endDate,endTime,endAmPm));</span>
+<span class="nc" id="L181">                bill.addPhoneCall (callFromBill);</span>
+<span class="nc" id="L182">            }</span>
+<span class="nc" id="L183">        }</span>
+<span class="nc" id="L184">        return bill;</span>
+    }
+    /**
+     *
+     * @param val : The date and time value as read from the file
+     * @return : the date and time validated and formatted to specified format.
+     */
+
+    private static String[] getDateTime(String val) {
+        String[] dateTime;
+<span class="nc" id="L194">        PhoneCallHelper.checkValidArgumentFormat (val.trim ());</span>
+<span class="nc" id="L195">        dateTime = val.split (&quot; &quot;);</span>
+<span class="nc" id="L196">        PhoneCallHelper.checkDateFormat (dateTime[0].trim ());</span>
+<span class="nc" id="L197">        PhoneCallHelper.checkTimeFormat (dateTime[1].trim (),dateTime[2].trim ());</span>
+<span class="nc" id="L198">        return dateTime;</span>
+    }
+
+    /**
+     *
+     * @param sdate  : The start time of the phone call
+     * @param edate   : the end time of the phone call
+     * @return the call duration in minutes.
+     */
+    private static long getDurationOfcallInMinutes(Date sdate  , Date edate){
+<span class="nc" id="L208">       long diffInMilliSec = edate.getTime () - sdate.getTime ();</span>
+<span class="nc" id="L209">       long diffInMinutes = diffInMilliSec/(1000*60);</span>
+<span class="nc" id="L210">       return diffInMinutes;</span>
+    }
+
+    /**
+     *@param bill : the phone bill with all the phone calls
+     * @return  : The sorted set of the phone calls
+     */
+    private  static SortedSet&lt;PhoneCall&gt; getSortedSet(PhoneBill bill) {
+<span class="nc" id="L218">        SortedSet&lt;PhoneCall&gt; sortedCalls = new TreeSet&lt;&gt; (bill.getPhoneCalls ());</span>
+<span class="nc" id="L219">        return sortedCalls;</span>
+    }
+
+    /**
+     *
+     * @param bill : The phonebill of a customer
+     * @return : the bill with phone calls sorted in chronological order of time
+     * formatted as a pretty content
+     */
+
+    public static String getPrettyContent(PhoneBill bill){
+<span class="nc" id="L230">        String prettyContent = null;</span>
+<span class="nc" id="L231">        SortedSet&lt;PhoneCall&gt; sortedCalls = getSortedSet (bill);</span>
+<span class="nc" id="L232">        prettyContent = &quot; The phone bill of the customer \n&quot;;</span>
+<span class="nc" id="L233">        prettyContent+= &quot;----------------------------------------------------------------------------------\n&quot;;</span>
+<span class="nc" id="L234">        prettyContent += &quot;*Name of the customer :\t\t&quot; + bill.getCustomer () + &quot;\n\n&quot;;</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        for(PhoneCall call : sortedCalls){</span>
+<span class="nc" id="L236">            prettyContent+= &quot;----------------------------------------------------------------------------------\n&quot;;</span>
+<span class="nc" id="L237">            prettyContent+=&quot;*Phone call from\t\t&quot; + call.getCaller () + &quot;\t\tto\t&quot;+ call.getCallee () + &quot;\n&quot;;</span>
+<span class="nc" id="L238">            prettyContent+=&quot;*\ton\t\t&quot; +  getPrettyDateTime (call.getStartTime ()) + &quot;\t\tto\t&quot; +  getPrettyDateTime (call.getEndTime ())+&quot;\n&quot;;</span>
+<span class="nc" id="L239">            prettyContent+= &quot;----------------------------------------------------------------------------------\n&quot;;</span>
+<span class="nc" id="L240">            prettyContent+=&quot;*The call duration was\t &quot;+ getDurationOfcallInMinutes (call.getStartTime (),call.getEndTime ()) +&quot;\tminutes\n&quot;;</span>
+<span class="nc" id="L241">            prettyContent+= &quot;----------------------------------------------------------------------------------\n&quot;;</span>
+<span class="nc" id="L242">        }</span>
+<span class="nc" id="L243">       return prettyContent;</span>
+    }
+
+    /**
+     *
+     * @param date
+     * @return
+     */
+
+    public static String getPrettyDateTime(Date date)  {
+<span class="nc" id="L253">        SimpleDateFormat sdf = new SimpleDateFormat(&quot; EEE , MMM dd''yyyy 'at' h:mm aa&quot;,Locale.US);</span>
+<span class="nc" id="L254">        sdf.setLenient (false);</span>
+<span class="nc" id="L255">        String sMyDate = sdf.format (date);</span>
+<span class="nc" id="L256">        return sMyDate;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

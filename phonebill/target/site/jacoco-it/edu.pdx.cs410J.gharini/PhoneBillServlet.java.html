@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhoneBillServlet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">PhoneBillServlet.java</span></div><h1>PhoneBillServlet.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+
+import com.google.common.annotations.VisibleForTesting;
+import edu.pdx.cs410J.AbstractPhoneBill;
+import edu.pdx.cs410J.web.HttpRequestHelper;
+import groovy.json.internal.IO;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+
+/**
+ * This servlet ultimately provides a REST API for working with an
+ * &lt;code&gt;PhoneBill&lt;/code&gt;.  It
+ */
+<span class="nc" id="L23">public class PhoneBillServlet extends HttpServlet</span>
+{
+    static final String CUSTOMER_NAME=&quot;customer&quot;;
+    static final String CALLER_NUMBER=&quot;caller&quot;;
+    static final String CALLEE_NUMBER=&quot;callee&quot;;
+    static final String START_TIME = &quot;startTime&quot;;
+    static final String END_TIME = &quot;endTime&quot;;
+
+<span class="nc" id="L31">    private final Map&lt;String, PhoneBill&gt; phoneBillHashMap = new HashMap&lt;&gt;();</span>
+
+    /**
+     * Handles an HTTP GET request from a client by writing the phone bill for the customer
+     * HTTP parameter to the HTTP response. The search for phone calls between specified times is also handled here
+     */
+    @Override
+    protected void doGet( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+<span class="nc" id="L40">        response.setContentType( &quot;text/plain&quot; );</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if(response.getStatus ()!=200){</span>
+<span class="nc" id="L42">            response.sendError (response.getStatus () , &quot;Server Unavailable &quot; + response.getStatus () );</span>
+<span class="nc" id="L43">            return;</span>
+        }
+
+<span class="nc" id="L46">        PrintWriter pw = response.getWriter ();</span>
+
+<span class="nc" id="L48">        PhoneBill phonebill = null;</span>
+<span class="nc" id="L49">        Date startD = new Date ();</span>
+<span class="nc" id="L50">        Date endD = new Date ();</span>
+<span class="nc" id="L51">        String name = null;</span>
+<span class="nc" id="L52">        List&lt;String&gt; params = Collections.list(request.getParameterNames ());</span>
+<span class="nc" id="L53">        name = getParameter( CUSTOMER_NAME, request );</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        if(name == null){</span>
+<span class="nc" id="L55">            response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , &quot;Please Enter Customer Name&quot;);</span>
+<span class="nc" id="L56">            return;</span>
+        }
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        if(params.size ()==1){</span>
+
+<span class="nc" id="L60">            phonebill = getPhoneBill (name);</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">            if(phonebill==null){</span>
+<span class="nc" id="L62">                response.setStatus(HttpServletResponse.SC_NOT_FOUND);</span>
+<span class="nc" id="L63">                pw.println(&quot;The Customer doesn't have a phone bill&quot;);</span>
+<span class="nc" id="L64">                pw.flush ();</span>
+<span class="nc" id="L65">                return;</span>
+            }else
+            {
+<span class="nc" id="L68">                response.setStatus (HttpServletResponse.SC_OK);</span>
+<span class="nc" id="L69">               pw.println (FileHelper.getPrettyContent (phonebill));</span>
+<span class="nc" id="L70">               pw.flush ();</span>
+            }
+        }
+
+<span class="nc bnc" id="L74" title="All 4 branches missed.">        if(params.contains (START_TIME) &amp;&amp; params.contains (END_TIME)){</span>
+<span class="nc" id="L75">            String startTime = getParameter (START_TIME , request);</span>
+<span class="nc" id="L76">            String endTime = getParameter (END_TIME , request);</span>
+
+<span class="nc bnc" id="L78" title="All 4 branches missed.">            if(startTime == null || startTime.equals (&quot;&quot;)){</span>
+<span class="nc" id="L79">                response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED,&quot;Please Enter start time&quot;);</span>
+<span class="nc" id="L80">                return;</span>
+            }
+<span class="nc bnc" id="L82" title="All 4 branches missed.">            if(endTime == null || endTime.equals (&quot;&quot;)){</span>
+<span class="nc" id="L83">                response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , &quot;Please Enter End Time&quot;);</span>
+<span class="nc" id="L84">                return;</span>
+            }
+
+            try{
+<span class="nc" id="L88">                PhoneCallHelper.checkValidArgumentFormat (startTime.trim ());</span>
+<span class="nc" id="L89">                PhoneCallHelper.checkValidArgumentFormat (endTime.trim ());</span>
+<span class="nc" id="L90">                String [] start_time = startTime.split (&quot; &quot;);</span>
+<span class="nc" id="L91">                String [] end_time = endTime.split (&quot; &quot;);</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">                if(start_time.length &lt; 3 || end_time.length &lt; 3){</span>
+<span class="nc" id="L93">                    response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , &quot; Invalid Date and Time. Please enter valid start/end times&quot;);</span>
+<span class="nc" id="L94">                    throw new InvalidDateAndTimeException (&quot;Invalid Date and Time. Please enter valid start/end times&quot;);</span>
+                }
+<span class="nc" id="L96">                PhoneCallHelper.checkDateFormat (start_time[0].trim ());</span>
+<span class="nc" id="L97">                PhoneCallHelper.checkTimeFormat (start_time[1].trim (),start_time[2].trim ());</span>
+<span class="nc" id="L98">                PhoneCallHelper.checkDateFormat (end_time[0].trim ());</span>
+<span class="nc" id="L99">                PhoneCallHelper.checkTimeFormat (end_time[1].trim (),end_time[2].trim ());</span>
+<span class="nc" id="L100">                PhoneCallHelper.checkDateDifference (start_time[0].trim () , start_time[1].trim ()+&quot; &quot;+start_time[2].trim (),</span>
+<span class="nc" id="L101">                        end_time[0].trim () , end_time[1].trim ()+&quot; &quot;+end_time[2].trim () );</span>
+
+<span class="nc" id="L103">                startD = PhoneCallHelper.convertToDate (start_time[0].trim () ,start_time[1].trim () ,start_time[2].trim ());</span>
+<span class="nc" id="L104">                endD = PhoneCallHelper.convertToDate (end_time[0].trim () , end_time[1].trim (), end_time[2].trim ());</span>
+<span class="nc" id="L105">                phonebill = getPhoneBill(name);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if(phonebill==null){</span>
+<span class="nc" id="L107">                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);</span>
+<span class="nc" id="L108">                    pw.println(&quot;The Customer doesn't have a phone bill&quot;);</span>
+<span class="nc" id="L109">                    pw.flush ();</span>
+<span class="nc" id="L110">                    return;</span>
+                }
+<span class="nc bnc" id="L112" title="All 2 branches missed.">                if(phonebill.getPhoneCalls () !=null) {</span>
+<span class="nc" id="L113">                    Collection&lt;PhoneCall&gt; calls = phonebill.getPhoneCalls ();</span>
+<span class="nc" id="L114">                    PhoneBill billSearchResult = new PhoneBill (name);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                    for (PhoneCall call : calls) {</span>
+<span class="nc bnc" id="L116" title="All 4 branches missed.">                        if ((call.getStartTime ().equals (startD) || call.getStartTime ().after (startD)) &amp;&amp;</span>
+<span class="nc bnc" id="L117" title="All 4 branches missed.">                                (call.getEndTime ().equals (endD) || call.getEndTime ().before (endD))) {</span>
+<span class="nc" id="L118">                            billSearchResult.addPhoneCall (call);</span>
+                        }
+<span class="nc" id="L120">                    }</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                    if(billSearchResult.getPhoneCalls ().size () == 0){</span>
+<span class="nc" id="L122">                        response.setStatus (HttpServletResponse.SC_NOT_FOUND);</span>
+<span class="nc" id="L123">                        pw.println (&quot;No Phone Calls between the times &quot; + startTime + &quot; &quot; + endTime);</span>
+<span class="nc" id="L124">                        pw.flush ();</span>
+                    }
+<span class="nc" id="L126">                    pw.println (FileHelper.getPrettyContent (billSearchResult));</span>
+<span class="nc" id="L127">                    pw.flush ();</span>
+<span class="nc" id="L128">                }</span>
+               else{
+<span class="nc" id="L130">                   response.sendError (HttpServletResponse.SC_NOT_FOUND , &quot;No Phone Calls in the Phone bill&quot;);</span>
+               }
+
+<span class="nc" id="L133">            } catch (InvalidDateAndTimeException | InvalidArgumentFormatException e){</span>
+
+<span class="nc" id="L135">                response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED, e.getMessage ());</span>
+<span class="nc" id="L136">            }</span>
+        }
+<span class="nc" id="L138">        response.setStatus (HttpServletResponse.SC_OK);</span>
+<span class="nc" id="L139">    }</span>
+    /**
+     * Handles an HTTP POST request by storing the dictionary entry for the
+     * &quot;word&quot; and &quot;definition&quot; request parameters.  It writes the dictionary
+     * entry to the HTTP response.
+     */
+    @Override
+    protected void doPost( HttpServletRequest request, HttpServletResponse response ) throws ServletException, IOException
+    {
+<span class="nc" id="L148">        response.setContentType( &quot;text/plain&quot; );</span>
+<span class="nc" id="L149">        Date START_TIME_DATE = new Date () ;</span>
+<span class="nc" id="L150">        Date END_TIME_DATE = new Date ();</span>
+<span class="nc" id="L151">        PrintWriter pw = response.getWriter ();</span>
+<span class="nc" id="L152">        String name = getParameter( CUSTOMER_NAME, request );</span>
+<span class="nc bnc" id="L153" title="All 4 branches missed.">        if (name == null || name.equals (&quot;&quot;)) {</span>
+<span class="nc" id="L154">            missingRequiredParameter(response, CUSTOMER_NAME);</span>
+<span class="nc" id="L155">            return;</span>
+        }
+<span class="nc" id="L157">        String callerNumber = getParameter (CALLER_NUMBER ,request);</span>
+<span class="nc bnc" id="L158" title="All 4 branches missed.">        if (callerNumber == null || callerNumber.equals (&quot;&quot;)) {</span>
+<span class="nc" id="L159">            missingRequiredParameter(response, CALLER_NUMBER);</span>
+<span class="nc" id="L160">            return;</span>
+        }
+<span class="nc" id="L162">        String calleeNumber = getParameter (CALLEE_NUMBER , request);</span>
+<span class="nc bnc" id="L163" title="All 4 branches missed.">        if (calleeNumber == null || calleeNumber.equals (&quot;&quot;)) {</span>
+<span class="nc" id="L164">            missingRequiredParameter(response, CALLEE_NUMBER);</span>
+<span class="nc" id="L165">            return;</span>
+        }
+<span class="nc" id="L167">        String startTime = getParameter (START_TIME , request);</span>
+<span class="nc bnc" id="L168" title="All 4 branches missed.">        if (startTime == null || startTime.equals (&quot;&quot;)) {</span>
+<span class="nc" id="L169">            missingRequiredParameter(response, START_TIME);</span>
+<span class="nc" id="L170">            return;</span>
+        }
+<span class="nc" id="L172">        String endTime = getParameter (END_TIME , request);</span>
+<span class="nc bnc" id="L173" title="All 4 branches missed.">        if (endTime == null || endTime.equals (&quot;&quot;)) {</span>
+<span class="nc" id="L174">            missingRequiredParameter(response, END_TIME);</span>
+<span class="nc" id="L175">            return;</span>
+        }
+        PhoneBill phoneBill;
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        if(this.phoneBillHashMap.containsKey (name)) {</span>
+<span class="nc" id="L179">             phoneBill = getPhoneBill(name);</span>
+        }else {
+<span class="nc" id="L181">             phoneBill = new PhoneBill(name);</span>
+<span class="nc" id="L182">            addPhoneBill(phoneBill);</span>
+        }
+
+//
+//        if(this.phoneBillHashMap.containsKey (CUSTOMER_NAME)){
+//            phoneBill = this.phoneBillHashMap.get (CUSTOMER_NAME);
+//        } else
+//        {
+//            phoneBill = new PhoneBill (CUSTOMER_NAME);
+//            addPhoneBill (phoneBill);
+//        }
+
+        try{
+<span class="nc" id="L195">            PhoneCallHelper.checkValidArgumentFormat (name);</span>
+<span class="nc" id="L196">            PhoneCallHelper.checkValidArgumentFormat (callerNumber);</span>
+<span class="nc" id="L197">            PhoneCallHelper.checkValidArgumentFormat (calleeNumber);</span>
+<span class="nc" id="L198">            PhoneCallHelper.checkPhoneNumberFormat (calleeNumber);</span>
+<span class="nc" id="L199">            PhoneCallHelper.checkCallerAndCallee (callerNumber,calleeNumber);</span>
+<span class="nc" id="L200">            PhoneCallHelper.checkValidArgumentFormat (startTime.trim ());</span>
+<span class="nc" id="L201">            PhoneCallHelper.checkValidArgumentFormat (endTime.trim ());</span>
+<span class="nc" id="L202">            String [] start_time = startTime.split (&quot; &quot;);</span>
+<span class="nc" id="L203">            String [] end_time = endTime.split (&quot; &quot;);</span>
+<span class="nc bnc" id="L204" title="All 4 branches missed.">            if(start_time.length &lt; 3 || end_time.length &lt; 3){</span>
+<span class="nc" id="L205">                response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , &quot; Invalid Date and Time. Please enter valid start/end times&quot;);</span>
+            }
+<span class="nc" id="L207">            PhoneCallHelper.checkDateFormat (start_time[0].trim ());</span>
+<span class="nc" id="L208">            PhoneCallHelper.checkTimeFormat (start_time[1].trim (),start_time[2].trim ());</span>
+<span class="nc" id="L209">            PhoneCallHelper.checkDateFormat (end_time[0].trim ());</span>
+            //PhoneCallHelper.checkAmPmForCase ();
+<span class="nc" id="L211">            PhoneCallHelper.checkTimeFormat (end_time[1].trim (),end_time[2].trim ());</span>
+<span class="nc" id="L212">            PhoneCallHelper.checkDateDifference (start_time[0].trim () , start_time[1].trim ()+&quot; &quot;+start_time[2].trim (),</span>
+<span class="nc" id="L213">                    end_time[0].trim () , end_time[1].trim ()+&quot; &quot;+end_time[2].trim () );</span>
+
+<span class="nc" id="L215">            START_TIME_DATE = PhoneCallHelper.convertToDate (start_time[0].trim () ,start_time[1].trim () ,start_time[2].trim ());</span>
+<span class="nc" id="L216">            END_TIME_DATE = PhoneCallHelper.convertToDate (end_time[0].trim () , end_time[1].trim (), end_time[2].trim ());</span>
+<span class="nc" id="L217">            PhoneCall phonecall = new PhoneCall (callerNumber,calleeNumber,START_TIME_DATE,END_TIME_DATE);</span>
+<span class="nc" id="L218">            phoneBill.addPhoneCall (phonecall);</span>
+<span class="nc" id="L219">            pw.println (&quot;Phone call created and added to the phone bill\n&quot;);</span>
+<span class="nc" id="L220">            pw.println (phonecall);</span>
+<span class="nc" id="L221">            pw.flush ();</span>
+<span class="nc" id="L222">            response.setStatus( HttpServletResponse.SC_OK);</span>
+
+<span class="nc" id="L224">        } catch (InvalidArgumentFormatException|InvalidNumberOfArgumentsException|InvalidPhoneNumberException</span>
+                |InvalidDateAndTimeException|SameCallerAndCalleeException| InvalidOptionException ex) {
+<span class="nc" id="L226">            response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , ex.getMessage ());</span>
+
+        }
+<span class="nc" id="L229">        catch(Exception e){</span>
+<span class="nc" id="L230">            response.sendError (HttpServletResponse.SC_PRECONDITION_FAILED , e.getMessage ());</span>
+
+<span class="nc" id="L232">        }</span>
+<span class="nc" id="L233">    }</span>
+
+    /**
+     * Returns the value of the HTTP request parameter with the given name.
+     *
+     * @return &lt;code&gt;null&lt;/code&gt; if the value of the parameter is
+     *         &lt;code&gt;null&lt;/code&gt; or is the empty string
+     */
+    private String getParameter(String name, HttpServletRequest request) {
+<span class="nc" id="L242">        String value = request.getParameter(name);</span>
+<span class="nc bnc" id="L243" title="All 4 branches missed.">        if (value == null || &quot;&quot;.equals(value)) {</span>
+<span class="nc" id="L244">            return null;</span>
+
+        } else {
+<span class="nc" id="L247">            return value;</span>
+        }
+    }
+
+    /**
+     * Writes an error message about a missing parameter to the HTTP response.
+     *
+     */
+    private void missingRequiredParameter( HttpServletResponse response, String parameterName )
+        throws IOException
+    {
+<span class="nc" id="L258">        String message = String.format(&quot;The required parameter \&quot;%s\&quot; is missing&quot;, parameterName);;</span>
+<span class="nc" id="L259">        response.sendError(HttpServletResponse.SC_PRECONDITION_FAILED, message);</span>
+<span class="nc" id="L260">    }</span>
+
+    /**
+     *
+     * @param customer
+     * @return
+     */
+
+  public PhoneBill getPhoneBill(String customer) {
+<span class="nc" id="L269">        return this.phoneBillHashMap.get(customer);</span>
+    }
+
+    /**
+     *
+     * @param bill
+     */
+   public void addPhoneBill(PhoneBill bill) {
+<span class="nc" id="L277">        this.phoneBillHashMap.put(bill.getCustomer(), bill);</span>
+<span class="nc" id="L278">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

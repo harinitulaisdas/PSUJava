@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Project4.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">Project4.java</span></div><h1>Project4.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+
+import edu.pdx.cs410J.web.HttpRequestHelper;
+
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.Map;
+
+/**
+ * The main class that parses the command line and communicates with the
+ * Phone Bill server using REST.
+ */
+<span class="nc" id="L18">public class Project4 {</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L21">        String hostName = null;</span>
+<span class="nc" id="L22">        String portString = null;</span>
+<span class="nc" id="L23">        String customer = null;</span>
+<span class="nc" id="L24">        String callerNumber = null;</span>
+<span class="nc" id="L25">        String calleeNumber = null;</span>
+<span class="nc" id="L26">        String startDate = null;</span>
+<span class="nc" id="L27">        String startTime =null;</span>
+<span class="nc" id="L28">        String endDate =null;</span>
+<span class="nc" id="L29">        String endTime = null;</span>
+<span class="nc" id="L30">        String startAmPm = null;</span>
+<span class="nc" id="L31">        String endAmPm = null;</span>
+<span class="nc" id="L32">        Date finalStartTime = null;</span>
+<span class="nc" id="L33">        Date finalEndTime = null;</span>
+<span class="nc" id="L34">        ArrayList&lt;String&gt; options = null;</span>
+<span class="nc" id="L35">        ArrayList&lt;String&gt; nonOptions =null;</span>
+        ArrayList&lt;ArrayList&lt;String&gt;&gt; list;
+<span class="nc" id="L37">        PhoneCall call = null;</span>
+        PhoneBill bill;
+<span class="nc" id="L39">        int port = 0;</span>
+
+        try{
+<span class="nc" id="L42">            list = PhoneCallHelper.loadOptions(args);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">            for(ArrayList a : list) {</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                if (options == null) {</span>
+<span class="nc" id="L45">                    options = a;</span>
+                }
+<span class="nc bnc" id="L47" title="All 2 branches missed.">                else if (nonOptions == null) {</span>
+<span class="nc" id="L48">                    nonOptions = a;</span>
+                }
+<span class="nc" id="L50">            }</span>
+<span class="nc bnc" id="L51" title="All 4 branches missed.">            if(options!=null &amp;&amp; options.contains (&quot;-README&quot;)){</span>
+<span class="nc" id="L52">                PhoneCallHelper.readme ();</span>
+<span class="nc" id="L53">                System.exit (1);</span>
+            }
+<span class="nc bnc" id="L55" title="All 6 branches missed.">            if(options!=null &amp;&amp; (options.contains (&quot;-host&quot;) || options.contains (&quot;-port&quot;))){</span>
+<span class="nc" id="L56">                  PhoneCallHelper.checkHostAndPort (args);</span>
+            }
+<span class="nc bnc" id="L58" title="All 4 branches missed.">            if(options!=null &amp;&amp; nonOptions!=null){</span>
+<span class="nc" id="L59">                PhoneCallHelper.checkNumberOfArguments (args,nonOptions.size (),options.size (),options);</span>
+            }
+<span class="nc" id="L61">            int hostIndex = Arrays.asList (args).indexOf (&quot;-host&quot;);</span>
+<span class="nc" id="L62">            int portIndex = Arrays.asList (args).indexOf (&quot;-port&quot;);</span>
+<span class="nc" id="L63">            hostName = args[hostIndex+1];</span>
+<span class="nc" id="L64">            portString = args[portIndex +1];</span>
+<span class="nc" id="L65">            port = Integer.parseInt (portString);</span>
+<span class="nc" id="L66">            PhoneBillRestClient client = new PhoneBillRestClient (hostName,port);</span>
+<span class="nc" id="L67">            int startPt = options.size ()+2;</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if( !options.contains (&quot;-search&quot;)){</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                for(int i = startPt ; i &lt; args.length ; i++){</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                    if(customer == null ){</span>
+<span class="nc" id="L72">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L73">                        customer = args[i];</span>
+                    }
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                    else if (callerNumber == null){</span>
+<span class="nc" id="L76">                        callerNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+                    }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">                    else if (calleeNumber == null){</span>
+<span class="nc" id="L79">                        calleeNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+<span class="nc" id="L80">                        PhoneCallHelper.checkCallerAndCallee (callerNumber,calleeNumber);</span>
+                    }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                    else if (startDate == null){</span>
+<span class="nc" id="L83">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L84">                        PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L85">                        startDate = args[i];</span>
+                    }
+<span class="nc bnc" id="L87" title="All 2 branches missed.">                    else if (startTime == null){</span>
+<span class="nc" id="L88">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L89">                        startTime = args[i];</span>
+                    }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    else if (startAmPm == null){</span>
+<span class="nc" id="L92">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L93">                        PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L94">                        startAmPm = args[i];</span>
+                    }
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                    else if(endDate == null) {</span>
+<span class="nc" id="L97">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L98">                        PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L99">                        endDate = args[i];</span>
+                    }
+<span class="nc bnc" id="L101" title="All 2 branches missed.">                    else if (endTime == null){</span>
+<span class="nc" id="L102">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L103">                        endTime = args[i];</span>
+                    }
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                    else if(endAmPm == null) {</span>
+<span class="nc" id="L106">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L107">                        PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L108">                        endAmPm = args[i];</span>
+<span class="nc" id="L109">                        PhoneCallHelper.checkTimeFormat ( startTime, startAmPm );</span>
+<span class="nc" id="L110">                        PhoneCallHelper.checkTimeFormat ( endTime, endAmPm );</span>
+<span class="nc" id="L111">                        PhoneCallHelper.checkDateDifference (startDate, startTime + &quot; &quot;+startAmPm,endDate,endTime+ &quot; &quot; +endAmPm);</span>
+<span class="nc" id="L112">                        finalStartTime = PhoneCallHelper.convertToDate (startDate,startTime,startAmPm);</span>
+<span class="nc" id="L113">                        finalEndTime = PhoneCallHelper.convertToDate (endDate,endTime,endAmPm);</span>
+                    }
+                    else{
+<span class="nc" id="L116">                        String msg = &quot;Extraneous command line argument&quot; ;</span>
+<span class="nc" id="L117">                        PhoneCallHelper.printErrorMessageAndExit (msg+&quot; : &quot;+args[i]);</span>
+                    }
+                }
+<span class="nc" id="L120">                call = new PhoneCall(callerNumber,calleeNumber,finalStartTime,finalEndTime);</span>
+<span class="nc" id="L121">                bill = new PhoneBill(customer);</span>
+<span class="nc" id="L122">                bill.addPhoneCall (call);</span>
+
+            } else {
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                for (int i = startPt; i &lt; args.length; i++) {</span>
+
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                    if (customer == null) {</span>
+<span class="nc" id="L128">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L129">                        customer = args[i];</span>
+                    }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                    else if (startDate == null) {</span>
+<span class="nc" id="L132">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L133">                        PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L134">                        startDate = args[i];</span>
+                    }
+<span class="nc bnc" id="L136" title="All 2 branches missed.">                    else if (startTime == null) {</span>
+<span class="nc" id="L137">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L138">                        startTime = args[i];</span>
+                    }
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                    else if (startAmPm == null) {</span>
+<span class="nc" id="L141">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L142">                        PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L143">                        startAmPm = args[i];</span>
+                    }
+<span class="nc bnc" id="L145" title="All 2 branches missed.">                    else if (endDate == null) {</span>
+<span class="nc" id="L146">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L147">                        PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L148">                        endDate = args[i];</span>
+                    }
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                    else if (endTime == null) {</span>
+<span class="nc" id="L151">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L152">                        endTime = args[i];</span>
+                    }
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                    else if (endAmPm == null) {</span>
+<span class="nc" id="L155">                        PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L156">                        PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L157">                        endAmPm = args[i];</span>
+<span class="nc" id="L158">                        PhoneCallHelper.checkTimeFormat (startTime, startAmPm);</span>
+<span class="nc" id="L159">                        PhoneCallHelper.checkTimeFormat (endTime, endAmPm);</span>
+<span class="nc" id="L160">                        PhoneCallHelper.checkDateDifference (startDate, startTime + &quot; &quot; + startAmPm, endDate, endTime + &quot; &quot; + endAmPm);</span>
+<span class="nc" id="L161">                        finalStartTime = PhoneCallHelper.convertToDate (startDate, startTime, startAmPm);</span>
+<span class="nc" id="L162">                        finalEndTime = PhoneCallHelper.convertToDate (endDate, endTime, endAmPm);</span>
+                    }
+                    else {
+<span class="nc" id="L165">                        String msg = &quot;Extraneous command line argument&quot;;</span>
+<span class="nc" id="L166">                        PhoneCallHelper.printErrorMessageAndExit (msg + &quot; : &quot; + args[i]);</span>
+                    }
+
+                }
+            }
+<span class="nc bnc" id="L171" title="All 4 branches missed.">            if(options.contains (&quot;-host&quot;) &amp;&amp; options.contains (&quot;-port&quot;)){</span>
+                try {
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                    if (options.contains (&quot;-search&quot;)) {</span>
+<span class="nc" id="L174">                        String st_time = startDate + &quot; &quot; + startTime + &quot; &quot; + startAmPm;</span>
+<span class="nc" id="L175">                        String e_time = endDate + &quot; &quot; + endTime + &quot; &quot; + endAmPm;</span>
+<span class="nc bnc" id="L176" title="All 4 branches missed.">                        if(startDate==null || endDate==null){</span>
+<span class="nc" id="L177">                            PhoneCallHelper.printErrorMessageAndExit (&quot;Missing start/end times.&quot; +</span>
+                                    &quot;The -search option should have start and end times. &quot;);
+                        }
+<span class="nc" id="L180">                        System.out.println (client.searchPhonebill (customer, st_time, e_time));</span>
+<span class="nc bnc" id="L181" title="All 4 branches missed.">                    } else if (nonOptions.size () == 3 &amp;&amp; options.size ()==2) {</span>
+<span class="nc" id="L182">                        System.out.println (client.getPrettyPhoneBill (customer));</span>
+                    }
+                    else{
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                        if(call!=null){</span>
+<span class="nc" id="L186">                            String st_time = startDate + &quot; &quot; + startTime + &quot; &quot; + startAmPm;</span>
+<span class="nc" id="L187">                            String e_time = endDate + &quot; &quot; + endTime + &quot; &quot; + endAmPm;</span>
+<span class="nc" id="L188">                          client.addPhoneCall (customer,callerNumber,calleeNumber,st_time,e_time);</span>
+<span class="nc" id="L189">                          System.out.println (&quot;Phone call created and added to the phone bill&quot;);</span>
+                        }
+                    }
+<span class="nc" id="L192">                } catch (IOException  e){</span>
+<span class="nc" id="L193">                    PhoneCallHelper.printErrorMessageAndExit (&quot;Error while fetching content :\n&quot; + e.getMessage ());</span>
+<span class="nc" id="L194">                } catch (Exception e){</span>
+<span class="nc" id="L195">                    PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L196">                }</span>
+            }
+
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if(options.contains (&quot;-print&quot;)){</span>
+<span class="nc" id="L200">                System.out.println (&quot;__________________________________________________________________________________________&quot;);</span>
+<span class="nc" id="L201">                PhoneCallHelper.printCall (call);</span>
+<span class="nc" id="L202">                System.out.println (&quot;__________________________________________________________________________________________&quot;);</span>
+            }
+
+<span class="nc" id="L205">        } catch (InvalidArgumentFormatException|InvalidNumberOfArgumentsException|InvalidPhoneNumberException</span>
+                |InvalidDateAndTimeException|SameCallerAndCalleeException| InvalidOptionException ex) {
+<span class="nc" id="L207">            PhoneCallHelper.printErrorMessageAndExit (ex.getMessage ());</span>
+        }
+<span class="nc" id="L209">        catch(Exception e){</span>
+<span class="nc" id="L210">            PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L211">        }</span>
+<span class="nc" id="L212">    System.exit(1);</span>
+<span class="nc" id="L213">   }</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

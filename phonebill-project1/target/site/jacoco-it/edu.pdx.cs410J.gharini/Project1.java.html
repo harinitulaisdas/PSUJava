@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Project1.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CS410J Phone Bill Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">Project1.java</span></div><h1>Project1.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+import edu.pdx.cs410J.ParserException;
+import java.io.*;
+import java.util.ArrayList;
+
+
+
+/**
+ * The main class for the CS410J Phone Bill Project
+ */
+<span class="nc" id="L11">public class Project1 {</span>
+
+    /**
+     *
+     * @param args : The main method for the project2 takes input as command line arguments(args)
+     *
+     *             The Phone call and Phone bill object is constructed in this method by parsing the Command line arguments and
+     *             performing respective error checks. The Phone call object has Customer , callerNumber , calleeNumber , start Date and end date fields.
+     *
+     *             The phone bill class has a collection of phone calls and the customer name.
+     *
+     *             The functionality to write the phone bill to a text file and to read a text file containing
+     *             phone bill and convert it to a PhoneBill object is implemented in this project.
+     *
+     *             All the exceptions thrown during the error checks are handled in the main method and the user is prompted with an appropriate message.
+     */
+    public static void main(String[] args) {
+<span class="fc" id="L28">        String customer = null;</span>
+<span class="fc" id="L29">        String callerNumber = null;</span>
+<span class="fc" id="L30">        String calleeNumber = null;</span>
+<span class="fc" id="L31">        String startDate = null;</span>
+<span class="fc" id="L32">        String endDate = null;</span>
+<span class="fc" id="L33">        String startTime = null;</span>
+<span class="fc" id="L34">        String endTime = null;</span>
+<span class="fc" id="L35">        String file = null;</span>
+<span class="fc" id="L36">        ArrayList&lt;String&gt; options = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">        ArrayList&lt;String&gt; nonOptions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L38">        ArrayList&lt;ArrayList&lt;String&gt;&gt; list = null;</span>
+        try{
+<span class="fc" id="L40">            list = PhoneCallHelper.loadOptions(args);</span>
+<span class="fc" id="L41">            options = list.get(0);</span>
+<span class="fc" id="L42">            nonOptions = list.get (1);</span>
+<span class="fc" id="L43">            int numOfArgs = args.length;</span>
+<span class="fc" id="L44">            int numOfOptions = options.size();</span>
+<span class="fc" id="L45">            int numOfNonOptions = nonOptions.size ();</span>
+<span class="fc" id="L46">            PhoneCallHelper.checkNumOfArgs(numOfNonOptions,numOfArgs,args);</span>
+<span class="fc" id="L47">            int startPt = 0;</span>
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">            if(options.contains (&quot;-textFile&quot;)){</span>
+<span class="nc" id="L49">                startPt = numOfOptions + 1;</span>
+<span class="fc" id="L50">            } else startPt = numOfOptions;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">            for (int i = startPt; i&lt;args.length ; i++){</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">                if(customer == null ){</span>
+<span class="fc" id="L53">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="fc" id="L54">                    customer = args[i];</span>
+
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                } else if (callerNumber == null){</span>
+<span class="fc" id="L57">                    callerNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+
+<span class="fc bfc" id="L59" title="All 2 branches covered.">                } else if (calleeNumber == null ){</span>
+<span class="fc" id="L60">                    calleeNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+<span class="fc" id="L61">                    PhoneCallHelper.checkCallerAndCallee (callerNumber,calleeNumber);</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">                } else if (startDate == null ){</span>
+<span class="fc" id="L64">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="fc" id="L65">                    PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="fc" id="L66">                    startDate = args[i];</span>
+
+<span class="fc bfc" id="L68" title="All 2 branches covered.">                } else if (startTime == null ){</span>
+<span class="fc" id="L69">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="fc" id="L70">                    PhoneCallHelper.checkTimeFormat (args[i]);</span>
+<span class="fc" id="L71">                    startTime = args[i];</span>
+
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                }else if(endDate == null ) {</span>
+<span class="fc" id="L74">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="fc" id="L75">                    PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="fc" id="L76">                    endDate = args[i];</span>
+
+
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">                }else if (endTime == null ){</span>
+<span class="fc" id="L80">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="fc" id="L81">                    PhoneCallHelper.checkTimeFormat (args[i]);</span>
+<span class="fc" id="L82">                    endTime = args[i];</span>
+<span class="fc" id="L83">                    PhoneCallHelper.checkDateDifference (startDate, startTime,endDate,endTime);</span>
+
+
+                }
+            }
+        }
+<span class="fc" id="L89">        catch(InvalidArgumentFormatException iaf){</span>
+<span class="nc" id="L90">            PhoneCallHelper.printErrorMessageAndExit (iaf.getMessage ());</span>
+        }
+<span class="fc" id="L92">        catch(InvalidNumberOfArgumentsException ina) {</span>
+<span class="nc" id="L93">            PhoneCallHelper.printErrorMessageAndExit (ina.getMessage ());</span>
+        }
+<span class="fc" id="L95">        catch(InvalidPhoneNumberException ipn){</span>
+<span class="nc" id="L96">            PhoneCallHelper.printErrorMessageAndExit (ipn.getMessage ());</span>
+        }
+<span class="fc" id="L98">        catch (InvalidDateAndTimeException idf){</span>
+<span class="nc" id="L99">            PhoneCallHelper.printErrorMessageAndExit (idf.getMessage ());</span>
+        }
+<span class="fc" id="L101">        catch (SameCallerAndCalleeException scc){</span>
+<span class="nc" id="L102">            PhoneCallHelper.printErrorMessageAndExit (scc.getMessage ());</span>
+        }
+<span class="fc" id="L104">        catch (InvalidOptionException ioe){</span>
+<span class="nc" id="L105">            PhoneCallHelper.printErrorMessageAndExit (ioe.getMessage ());</span>
+        }
+<span class="nc" id="L107">        catch(Exception e){</span>
+<span class="nc" id="L108">            PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="pc" id="L109">        }</span>
+<span class="fc" id="L110">        PhoneCall call = new PhoneCall(customer,callerNumber,calleeNumber,startDate, startTime,endDate,endTime);</span>
+<span class="fc" id="L111">        PhoneBill bill = new PhoneBill(customer);</span>
+        PhoneBill billFromFile;
+<span class="fc" id="L113">        String filePath = null;</span>
+<span class="fc" id="L114">        bill.addPhoneCall (call);</span>
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">        for(String option:options){</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">            if(option.equals (&quot;-print&quot;)){</span>
+<span class="fc" id="L117">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="fc" id="L118">                PhoneCallHelper.printCall (call);</span>
+<span class="fc" id="L119">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">            }else if(option.equals (&quot;-README&quot;)){</span>
+<span class="fc" id="L121">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="fc" id="L122">                PhoneCallHelper.readme ();</span>
+<span class="fc" id="L123">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            }else if(option.equals (&quot;-textFile&quot;)){</span>
+<span class="nc" id="L125">                file = nonOptions.get (0);</span>
+                try {
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                    if(!new File(file).isAbsolute ()){</span>
+<span class="nc" id="L128">                        filePath = new File(&quot;&quot;).getAbsolutePath ();</span>
+<span class="nc" id="L129">                        TextDumper dumper = new TextDumper (filePath.concat (&quot;/&quot;+file),call,customer);</span>
+<span class="nc" id="L130">                        dumper.dump (bill);</span>
+<span class="nc" id="L131">                        TextParser parser = new TextParser (filePath.concat (&quot;/&quot;+file),customer);</span>
+<span class="nc" id="L132">                        billFromFile = parser.parse ();</span>
+<span class="nc" id="L133">                    } else{</span>
+<span class="nc" id="L134">                        System.out.println (filePath);</span>
+<span class="nc" id="L135">                        TextDumper dumper = new TextDumper (filePath,call,customer);</span>
+<span class="nc" id="L136">                        dumper.dump (bill);</span>
+<span class="nc" id="L137">                        TextParser parser = new TextParser (filePath,customer);</span>
+<span class="nc" id="L138">                        billFromFile = parser.parse ();</span>
+                    }
+<span class="nc" id="L140">                    System.out.println (&quot;___________________________________________________________________________________________________________&quot;);</span>
+<span class="nc" id="L141">                    System.out.println (&quot;\nPhone Bill From the file : \n&quot; + billFromFile.getPhoneCalls ());</span>
+<span class="nc" id="L142">                    System.out.println (&quot;___________________________________________________________________________________________________________&quot;);</span>
+<span class="nc" id="L143">                } catch (IOException e){</span>
+<span class="nc" id="L144">                    PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L145">                } catch (ParserException e) {</span>
+<span class="nc" id="L146">                    PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L147">                } catch (FileException fe){</span>
+<span class="nc" id="L148">                    PhoneCallHelper.printErrorMessageAndExit (fe.getMessage ());</span>
+<span class="nc" id="L149">                }</span>
+            }
+<span class="fc" id="L151">        }</span>
+<span class="nc" id="L152">        System.exit(1);</span>
+<span class="nc" id="L153">    }</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Project3.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">Project3.java</span></div><h1>Project3.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+import edu.pdx.cs410J.ParserException;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+
+<span class="nc" id="L9">public class Project3 {</span>
+
+    /**
+     *
+     * @param args : Entry point for the project. The main method parses all command line arguments and validates the arguments. It also
+     *             performs suitable actions for different options specified in the command line.
+     */
+    public static void main(String[] args){
+
+<span class="nc" id="L18">        String customer_name = null;</span>
+<span class="nc" id="L19">        String callerNumber = null;</span>
+<span class="nc" id="L20">        String calleeNumber =null;</span>
+<span class="nc" id="L21">        String startDate = null;</span>
+<span class="nc" id="L22">        String startTime =null;</span>
+<span class="nc" id="L23">        String endDate =null;</span>
+<span class="nc" id="L24">        String endTime = null;</span>
+<span class="nc" id="L25">        String startAmPm = null;</span>
+<span class="nc" id="L26">        String endAmPm = null;</span>
+<span class="nc" id="L27">        String file = null;</span>
+<span class="nc" id="L28">        Date finalStartTime = null;</span>
+<span class="nc" id="L29">        Date finalEndTime = null;</span>
+        String prettyFile;
+        Boolean prettyPrintToFile ;
+<span class="nc" id="L32">        ArrayList&lt;String&gt; options = null;</span>
+<span class="nc" id="L33">        ArrayList&lt;String&gt; nonOptions =null;</span>
+<span class="nc" id="L34">        ArrayList&lt;String&gt; files=null ;</span>
+        ArrayList&lt;ArrayList&lt;String&gt;&gt; list;
+        PhoneCall call ;
+        PhoneBill bill ;
+<span class="nc" id="L38">        PhoneBill billFromFile = null;</span>
+        String filePath;
+        try{
+<span class="nc" id="L41">            list = PhoneCallHelper.loadOptions(args);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            for(ArrayList a : list){</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">                if(options == null){</span>
+<span class="nc" id="L44">                    options = a;</span>
+                }
+<span class="nc bnc" id="L46" title="All 2 branches missed.">                else if(nonOptions==null){</span>
+<span class="nc" id="L47">                    nonOptions = a;</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">                }else if(files == null){</span>
+<span class="nc" id="L49">                    files = a;</span>
+                }
+<span class="nc" id="L51">            }</span>
+<span class="nc" id="L52">            int numOfNonOptions = nonOptions.size ();</span>
+<span class="nc" id="L53">            prettyPrintToFile =  PhoneCallHelper.checkifPrettyPrintToFile(args);</span>
+<span class="nc" id="L54">            PhoneCallHelper.checkNumOfArgs(numOfNonOptions,args ,prettyPrintToFile);</span>
+<span class="nc" id="L55">            int startPt = PhoneCallHelper.getStartPoint(prettyPrintToFile,options,nonOptions,files);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if(options.contains (&quot;-textFile&quot;)){</span>
+<span class="nc" id="L57">                file = args[Arrays.asList (args).indexOf (&quot;-textFile&quot;) +1];</span>
+            }
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            for (int i = startPt; i&lt;args.length ; i++){</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                if(customer_name == null ){</span>
+<span class="nc" id="L61">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L62">                    customer_name = args[i];</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                } else if (callerNumber == null){</span>
+<span class="nc" id="L64">                    callerNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                } else if (calleeNumber == null ){</span>
+<span class="nc" id="L66">                    calleeNumber = PhoneCallHelper.getPhoneNumbers (args[i]);</span>
+<span class="nc" id="L67">                    PhoneCallHelper.checkCallerAndCallee (callerNumber,calleeNumber);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                } else if (startDate == null ){</span>
+<span class="nc" id="L69">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L70">                    PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L71">                    startDate = args[i];</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                } else if (startTime == null ){</span>
+<span class="nc" id="L73">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L74">                    startTime = args[i];</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                }else if (startAmPm == null ){</span>
+<span class="nc" id="L76">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L77">                    PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L78">                    startAmPm = args[i];</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                }else if(endDate == null ) {</span>
+<span class="nc" id="L80">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L81">                    PhoneCallHelper.checkDateFormat (args[i]);</span>
+<span class="nc" id="L82">                    endDate = args[i];</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                }else if (endTime == null ){</span>
+<span class="nc" id="L84">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L85">                    endTime = args[i];</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                }else if(endAmPm == null ) {</span>
+<span class="nc" id="L87">                    PhoneCallHelper.checkValidArgumentFormat (args[i]);</span>
+<span class="nc" id="L88">                    PhoneCallHelper.checkAmPmForCase (args[i]);</span>
+<span class="nc" id="L89">                    endAmPm = args[i];</span>
+<span class="nc" id="L90">                    PhoneCallHelper.checkTimeFormat ( startTime, startAmPm );</span>
+<span class="nc" id="L91">                    PhoneCallHelper.checkTimeFormat ( endTime, endAmPm );</span>
+<span class="nc" id="L92">                    PhoneCallHelper.checkDateDifference (startDate, startTime + &quot; &quot;+startAmPm,endDate,endTime+ &quot; &quot; +endAmPm);</span>
+<span class="nc" id="L93">                    finalStartTime = PhoneCallHelper.convertToDate (startDate,startTime,startAmPm);</span>
+<span class="nc" id="L94">                    finalEndTime = PhoneCallHelper.convertToDate (endDate,endTime,endAmPm);</span>
+                } else{
+<span class="nc" id="L96">                    String msg = &quot;Extraneous command line argument&quot; ;</span>
+<span class="nc" id="L97">                    PhoneCallHelper.printErrorMessageAndExit (msg+&quot; : &quot;+args[i]);</span>
+                }
+            }
+<span class="nc" id="L100">            call = new PhoneCall(callerNumber,calleeNumber,finalStartTime,finalEndTime);</span>
+<span class="nc" id="L101">            bill = new PhoneBill(customer_name);</span>
+<span class="nc" id="L102">            bill.addPhoneCall (call);</span>
+
+<span class="nc bnc" id="L104" title="All 2 branches missed.">            if(options.contains (&quot;-textFile&quot;)){</span>
+                try {
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                    if(!new File (file).isAbsolute ()){</span>
+<span class="nc" id="L107">                        filePath = new File(&quot;&quot;).getAbsolutePath ();</span>
+<span class="nc" id="L108">                        TextDumper dumper = new TextDumper (filePath.concat (&quot;/&quot;+file),call,customer_name);</span>
+<span class="nc" id="L109">                        dumper.dump (bill);</span>
+<span class="nc" id="L110">                        TextParser parser = new TextParser (filePath.concat (&quot;/&quot;+file),customer_name);</span>
+<span class="nc" id="L111">                        billFromFile = parser.parse ();</span>
+<span class="nc" id="L112">                    } else{</span>
+<span class="nc" id="L113">                        System.out.println (file);</span>
+<span class="nc" id="L114">                        TextDumper dumper = new TextDumper (file,call,customer_name);</span>
+<span class="nc" id="L115">                        dumper.dump (bill);</span>
+<span class="nc" id="L116">                        TextParser parser = new TextParser (file,customer_name);</span>
+<span class="nc" id="L117">                        billFromFile = parser.parse ();</span>
+                    }
+                    //System.out.println (&quot;___________________________________________________________________________________________________________&quot;);
+                    //System.out.println (&quot;\nPhone Bill From the file : \n&quot; + billFromFile.getPhoneCalls ());
+                    //System.out.println (&quot;___________________________________________________________________________________________________________&quot;);
+<span class="nc" id="L122">                } catch (IOException |ParserException | FileException e){</span>
+<span class="nc" id="L123">                    PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L124">                    e.printStackTrace ();</span>
+<span class="nc" id="L125">                }</span>
+            }
+<span class="nc bnc" id="L127" title="All 4 branches missed.">            if(options.contains (&quot;-pretty&quot;) &amp;&amp; nonOptions.contains (&quot;-&quot;)) {</span>
+<span class="nc" id="L128">                PrettyPrinter pretty_printer = new PrettyPrinter (billFromFile,customer_name);</span>
+<span class="nc" id="L129">                pretty_printer.dumpPrettyContentToStandardOut (billFromFile);</span>
+            }
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            if(prettyPrintToFile){</span>
+                try {
+<span class="nc" id="L133">                    int index = Arrays.asList (args).indexOf (&quot;-pretty&quot;);</span>
+<span class="nc" id="L134">                    prettyFile = args[index + 1];</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                    if (!new File (prettyFile).isAbsolute ()) {</span>
+<span class="nc" id="L136">                        filePath = new File(&quot;&quot;).getAbsolutePath ();</span>
+//                        TextDumper dumper = new TextDumper (filePath.concat (&quot;/&quot;+file), call, customer_name);
+//                        dumper.dump (bill);
+//                        TextParser parser = new TextParser (filePath.concat (&quot;/&quot;+file), customer_name);
+//                        billFromFile = parser.parse ();
+<span class="nc" id="L141">                        PrettyPrinter pretty_printer = new PrettyPrinter (filePath.concat (&quot;/&quot;+prettyFile), billFromFile, customer_name);</span>
+<span class="nc" id="L142">                        pretty_printer.dump (billFromFile);</span>
+<span class="nc" id="L143">                    }</span>
+                    else{
+//                        TextDumper dumper = new TextDumper (file,call,customer_name);
+//                        dumper.dump (bill);
+//                        TextParser parser = new TextParser (file,customer_name);
+//                        billFromFile = parser.parse ();
+<span class="nc" id="L149">                        PrettyPrinter pretty_printer = new PrettyPrinter (prettyFile, billFromFile, customer_name);</span>
+<span class="nc" id="L150">                        pretty_printer.dump (billFromFile);</span>
+                    }
+<span class="nc" id="L152">                } catch (IOException | FileException e){</span>
+<span class="nc" id="L153">                    PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L154">                }</span>
+<span class="nc bnc" id="L155" title="All 2 branches missed.">            } if(options.contains (&quot;-print&quot;)){</span>
+<span class="nc" id="L156">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="nc" id="L157">                PhoneCallHelper.printCall (call);</span>
+<span class="nc" id="L158">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+            }
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if(options.contains (&quot;-README&quot;)){</span>
+<span class="nc" id="L161">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+<span class="nc" id="L162">                PhoneCallHelper.readme ();</span>
+<span class="nc" id="L163">                System.out.println (&quot;_______________________________________________________________________________________________________________&quot;);</span>
+            }
+        }
+<span class="nc" id="L166">        catch (InvalidArgumentFormatException|InvalidNumberOfArgumentsException|InvalidPhoneNumberException</span>
+              |InvalidDateAndTimeException|SameCallerAndCalleeException| InvalidOptionException ex) {
+<span class="nc" id="L168">            PhoneCallHelper.printErrorMessageAndExit (ex.getMessage ());</span>
+        }
+<span class="nc" id="L170">        catch(Exception e){</span>
+<span class="nc" id="L171">            PhoneCallHelper.printErrorMessageAndExit (e.getMessage ());</span>
+<span class="nc" id="L172">        }</span>
+
+<span class="nc" id="L174">        System.exit(1);</span>
+<span class="nc" id="L175">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

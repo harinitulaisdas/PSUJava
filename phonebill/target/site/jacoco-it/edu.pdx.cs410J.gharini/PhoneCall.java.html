@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhoneCall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Phone Bill Web/REST Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">PhoneCall.java</span></div><h1>PhoneCall.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+
+import edu.pdx.cs410J.AbstractPhoneCall;
+
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Locale;
+
+/**
+ * The phone call class . It holds all the details of the phone call.
+ */
+
+public class PhoneCall extends AbstractPhoneCall implements Comparable&lt;PhoneCall&gt; {
+    /**
+     * customer : customer of the phone call.
+     */
+<span class="nc" id="L17">  private String customer = null;</span>
+    /**
+     * caller number : The phone number of the caller
+     */
+  private String callerNumber ;
+    /**
+     * caller number : The phone number of the callee
+     */
+  private String calleeNumber ;
+    /**
+     * startTime : The start date and time of the phone call
+     */
+<span class="nc" id="L29">  private Date startTime = null;</span>
+    /**
+     * endTime : The end date and time of the phone call
+     */
+<span class="nc" id="L33">  private Date endTime = null;</span>
+
+  public PhoneCall(String callerNumber , String calleeNumber,Date startTime,
+<span class="nc" id="L36">                   Date endTime ) {</span>
+
+
+<span class="nc" id="L39">    this.callerNumber = callerNumber;</span>
+<span class="nc" id="L40">    this.calleeNumber = calleeNumber;</span>
+<span class="nc" id="L41">    this.startTime = startTime;</span>
+<span class="nc" id="L42">    this.endTime = endTime;</span>
+<span class="nc" id="L43">  }</span>
+
+  @Override
+  public String getCaller() {
+<span class="nc" id="L47">    return this.callerNumber;</span>
+  }
+
+  @Override
+  public String getCallee() {
+<span class="nc" id="L52">    return this.calleeNumber;</span>
+  }
+
+  @Override
+  public String getStartTimeString() {
+<span class="nc" id="L57">     return shortFormat (getStartTime ());</span>
+  }
+  @Override
+  public String getEndTimeString() {
+<span class="nc" id="L61">     return shortFormat (getEndTime());</span>
+  }
+
+  @Override
+  public Date getStartTime() {
+<span class="nc" id="L66">    return this.startTime;</span>
+  }
+
+  @Override
+  public Date getEndTime() {
+<span class="nc" id="L71">    return this.endTime;</span>
+  }
+
+  private static  String shortFormat(Date dateTime){
+<span class="nc bnc" id="L75" title="All 2 branches missed.">    if(dateTime!=null)  {</span>
+<span class="nc" id="L76">          DateFormat dateFormat = DateFormat.getDateTimeInstance (DateFormat.SHORT,DateFormat.SHORT,Locale.US);</span>
+<span class="nc" id="L77">          dateFormat.setLenient (false);</span>
+<span class="nc" id="L78">          return dateFormat.format (dateTime);</span>
+      }
+      else{
+<span class="nc" id="L81">        return null;</span>
+      }
+
+  }
+
+  @Override
+  public int compareTo(PhoneCall o) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">      if(this.getStartTime ().after (o.getStartTime ())){</span>
+<span class="nc" id="L89">          return 1;</span>
+      }
+<span class="nc bnc" id="L91" title="All 2 branches missed.">      else if(this.getStartTime ().before (o.getStartTime ())){</span>
+<span class="nc" id="L92">          return -1;</span>
+      }
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">      else if(this.getStartTime ().equals (o.getStartTime ())){</span>
+
+<span class="nc" id="L97">          return (this.getCaller ().compareTo (o.getCaller ()));</span>
+
+      }
+<span class="nc" id="L100">    return 0;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>

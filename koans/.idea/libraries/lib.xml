@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="lib">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/app/lib/file-compiler.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/lib/koans.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/lib/util.jar!/" />
+      <root url="jar://$PROJECT_DIR$/app/lib/file-monitor.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

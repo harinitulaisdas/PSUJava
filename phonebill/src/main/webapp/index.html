@@ -1,0 +1,69 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+    <title>HTML forms for interacting with the REST API</title>
+    <style type="text/css">
+        div {
+            padding-bottom: 1em;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>
+
+    This page contains a couple of HTML forms that GET and POST to the
+    REST API provided by your project.
+
+</h1>
+
+<h2>
+    These forms let you interact with the simple dictionary REST API that
+    is created by the project archetype.
+</h2>
+
+
+<div>
+    <form method="get" action="calls">
+        List all Phone calls
+        <input name="customer" type="text" size="20" title="Customer Name"/>
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+
+<div>
+    <form method="get" action="calls">
+        <h3>List the phone calls</h3> <br>
+        Customer Name
+        <input name="customer" type="text" size="20" title="Customer Name"/> <br>
+        Start Time
+        <input name="startTime" type="text" size="20" title="Start Time"/> <br>
+        End Time
+        <input name="endTime" type="text" size="20" title="End Time"/> <br>
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+
+<div>
+    <form method="post" action="calls">
+       <h3>Create a PhoneCall </h3>
+        Customer Name
+        <input name="customer" type="text" size="10" title="Customer Name" /><br/>
+        Caller Phone Number
+        <input name="caller" type="text" size="100" title="Caller Phone Number" /><br/>
+        Callee Phone Number
+        <input name="callee" type="text" size="100" title="Callee Phone Number" /><br/>
+        Start Time of the Call
+        <input name="startTime" type="text" size="100" title="Start Time of the Call"/><br/>
+        End Time of the Call
+        <input name="endTime" type="text" size="100" title="End Time of the Call"/><br/>
+
+        <input type="submit" value="Submit"/>
+    </form>
+</div>
+
+</body>
+</html>

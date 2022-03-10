@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhoneCall.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">CS410J Phone Bill Project</a> &gt; <a href="index.source.html" class="el_package">edu.pdx.cs410J.gharini</a> &gt; <span class="el_source">PhoneCall.java</span></div><h1>PhoneCall.java</h1><pre class="source lang-java linenums">package edu.pdx.cs410J.gharini;
+
+import edu.pdx.cs410J.AbstractPhoneCall;
+
+public class PhoneCall extends AbstractPhoneCall {
+  private String customer ;
+  private String callerNumber ;
+  private String calleeNumber ;
+  private String startTime ;
+  private String endTime ;
+  private String startDate;
+  private String endDate;
+
+  public PhoneCall( String customer , String callerNumber , String calleeNumber , String startDate,
+<span class="fc" id="L15">                   String startTime,String endDate,String endTime ) {</span>
+
+<span class="fc" id="L17">    this.customer = customer;</span>
+<span class="fc" id="L18">    this.callerNumber = callerNumber;</span>
+<span class="fc" id="L19">    this.calleeNumber = calleeNumber;</span>
+<span class="fc" id="L20">    this.startTime = startTime;</span>
+<span class="fc" id="L21">    this.endTime = endTime;</span>
+<span class="fc" id="L22">    this.startDate = startDate;</span>
+<span class="fc" id="L23">    this.endDate = endDate;</span>
+<span class="fc" id="L24">  }</span>
+
+  @Override
+  public String getCaller() {
+<span class="fc" id="L28">    return this.callerNumber;</span>
+  }
+
+  @Override
+  public String getCallee() {
+<span class="fc" id="L33">    return this.calleeNumber;</span>
+  }
+
+  @Override
+  public String getStartTimeString() {
+    //throw new UnsupportedOperationException(&quot;This method is not implemented yet&quot;);
+<span class="fc" id="L39">    return this.startDate+ &quot; &quot; +this.startTime;</span>
+  }
+  @Override
+  public String getEndTimeString() {
+<span class="fc" id="L43">    return  this.endDate+&quot; &quot;+this.endTime;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.1.201803210924</span></div></body></html>
